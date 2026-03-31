@@ -8,14 +8,12 @@ This project is meant to write a custom client for game named Mines formerly nam
 
 ## Current existing commands and keybindings
   Log scrolling
-  -------------
   Page Up                   scroll log up one page
   Page Down                 scroll log down one page
   Home                      jump to oldest buffered line
   End                       jump back to live tail
 
   Emacs line editing
-  ------------------
   Ctrl+A / Ctrl+E           beginning / end of line
   Ctrl+F / Ctrl+B           forward / backward character
   Alt+F  / Alt+B            forward / backward word
