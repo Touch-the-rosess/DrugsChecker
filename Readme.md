@@ -33,7 +33,7 @@ This project is meant to write a custom client for game named Mines formerly nam
 ## How to run the project
 First of all you should have the robots.json in the same directory as the script.
 The structure of the json file is like next.
-`
+```json
 [
     {// this is an entry
         "name": "Robot name that would get displayed in the checker.",
@@ -45,5 +45,5 @@ The structure of the json file is like next.
     },
     // next entry of another robot that you have
 ]
-`
+````
 `python3 checker_standalone.py`
