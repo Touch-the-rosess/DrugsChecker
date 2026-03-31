@@ -1,12 +1,12 @@
-* Drugs checker
+# Drugs checker
 This is an proof of concept project writen in [python](https://www.python.org/).
 This project is meant to write a custom client for game named Mines formerly named Fodinae, located at 90.188.7.54:8090.
 
-** Current features
+## Current features
 1. It can connect to the game server, mentain connection and reconnect to the server on demand
 2. It has basic TUI with shell like input which lets you edit commands with ease
 
-** Current existing commands and keybindings
+## Current existing commands and keybindings
   Log scrolling
   -------------
   Page Up                   scroll log up one page
@@ -30,7 +30,7 @@ This project is meant to write a custom client for game named Mines formerly nam
   Ctrl+P / Up               previous command
   Ctrl+N / Down             next command
   Ctrl+L                    redraw screen
-** How to run the project
+## How to run the project
 First of all you should have the robots.json in the same directory as the script.
 The structure of the json file is like next.
 `
