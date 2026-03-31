@@ -44,5 +44,10 @@ The structure of the json file is like next.
     },
     // next entry of another robot that you have
 ]
-````
-`python3 checker_standalone.py`
+```
+
+```bash
+git clone https://github.com/Touch-the-rosess/DrugsChecker.git
+cd DrugsChecker
+python3 checker_standalone.py
+```
