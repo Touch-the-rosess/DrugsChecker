@@ -255,6 +255,24 @@ class TUI:
         scr.keypad(True)
         curses.halfdelay(1)   # getch() times out after 100 ms → polling loop
 
+        # Enable mouse / touch reporting.
+        # ALL_MOUSE_EVENTS covers scroll-wheel clicks (BUTTON4/5) and touch
+        # drag events forwarded by Termux and most modern terminal emulators.
+        # REPORT_MOUSE_POSITION adds continuous drag tracking (used for swipe).
+        try:
+            curses.mousemask(
+                curses.ALL_MOUSE_EVENTS | curses.REPORT_MOUSE_POSITION
+            )
+            # Ask the terminal for extended mouse reporting (SGR mode) so
+            # coordinates beyond column 223 work and Termux touch is reliable.
+            # This escape is safe to send to any xterm-compatible terminal.
+            scr.addstr(0, 0, "\033[?1003h\033[?1015h\033[?1006h")
+            scr.refresh()
+            scr.move(0, 0)
+            scr.clrtoeol()
+        except Exception:
+            pass   # mouse simply won't work if the terminal doesn't support it
+
         _install_tui_handler(self)
 
         threading.Thread(
@@ -271,6 +289,13 @@ class TUI:
                 key = -1
             if key != -1:
                 self._handle_key(key)
+
+        # Restore terminal mouse state before curses tears down
+        try:
+            scr.addstr(0, 0, "\033[?1003l\033[?1015l\033[?1006l")
+            scr.refresh()
+        except Exception:
+            pass
 
     # -------------------------------------------------------------------------
     # Colors
@@ -411,6 +436,11 @@ class TUI:
             scr.clear()
             return
 
+        # ── Mouse / touch events ───────────────────────────────────────────
+        if key == curses.KEY_MOUSE:
+            self._handle_mouse()
+            return
+
         # ── Log-pane scrolling ─────────────────────────────────────────────
         rows, cols = scr.getmaxyx()
         log_rows   = max(1, rows - 2)
@@ -546,6 +576,63 @@ class TUI:
             total      = len(self._lines)
             max_scroll = max(0, total - log_rows)
         self._scroll = max(0, min(max_scroll, self._scroll + delta))
+
+    # -------------------------------------------------------------------------
+    # Mouse / touch handler
+    # -------------------------------------------------------------------------
+
+    def _handle_mouse(self):
+        """
+        Decode a curses mouse event and scroll the log pane accordingly.
+
+        Scroll wheel (desktop):
+            BUTTON4_PRESSED  = wheel up   → scroll toward older lines
+            BUTTON5_PRESSED  = wheel down → scroll toward newer lines
+
+        Touch swipe (Termux / mobile terminal emulators):
+            Termux forwards touch drags as mouse-move events when SGR / 1003
+            mouse reporting is active.  We track the Y coordinate of the last
+            button-press and compare it with the current position to derive a
+            swipe direction and distance.
+        """
+        try:
+            _, mx, my, _, bstate = curses.getmouse()
+        except curses.error:
+            return
+
+        rows, _ = self._scr.getmaxyx()
+        log_rows = max(1, rows - 2)
+
+        # ── Scroll wheel (one notch = 3 lines, same as most terminals) ─────
+        if bstate & curses.BUTTON4_PRESSED:
+            # Wheel up → older content
+            self._scroll_by(+3)
+            return
+
+        # BUTTON5 may not be defined on all curses builds; guard with getattr
+        b5 = getattr(curses, "BUTTON5_PRESSED", 0)
+        if b5 and bstate & b5:
+            # Wheel down → newer content
+            self._scroll_by(-3)
+            return
+
+        # ── Touch / drag (Termux) ──────────────────────────────────────────
+        # Button 1 press → record anchor position for swipe tracking.
+        if bstate & curses.BUTTON1_PRESSED:
+            self._touch_anchor_y = my
+            self._touch_last_y   = my
+            return
+
+        # Button 1 motion (drag) or release → compute delta from anchor.
+        if bstate & (curses.BUTTON1_RELEASED | curses.REPORT_MOUSE_POSITION):
+            if hasattr(self, "_touch_last_y"):
+                dy = self._touch_last_y - my   # positive = finger moved up → scroll up
+                if abs(dy) >= 1:
+                    # Scale: 1 row of finger movement = 1 line of scroll.
+                    # Clamp to avoid flinging too far in one event.
+                    self._scroll_by(max(-log_rows, min(log_rows, dy)))
+                    self._touch_last_y = my
+            return
 
     # -------------------------------------------------------------------------
     # Word-motion helpers
