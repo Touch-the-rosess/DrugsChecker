@@ -7,27 +7,28 @@ This project is meant to write a custom client for game named Mines formerly nam
 2. It has basic TUI with shell like input which lets you edit commands with ease
 
 ## Current existing commands and keybindings
-  Log scrolling
-  Page Up                   scroll log up one page
-  Page Down                 scroll log down one page
-  Home                      jump to oldest buffered line
-  End                       jump back to live tail
 
-  Emacs line editing
-  Ctrl+A / Ctrl+E           beginning / end of line
-  Ctrl+F / Ctrl+B           forward / backward character
-  Alt+F  / Alt+B            forward / backward word
-  Ctrl+D                    delete character forward
-  Backspace / Ctrl+H        delete character backward
-  Ctrl+T                    transpose characters
-  Ctrl+K                    kill to end of line
-  Ctrl+U                    kill whole line
-  Ctrl+W                    kill word backward
-  Alt+D                     kill word forward
-  Ctrl+Y                    yank (paste last kill)
-  Ctrl+P / Up               previous command
-  Ctrl+N / Down             next command
-  Ctrl+L                    redraw screen
+### Log scrolling
+- **Page Up** — scroll log up one page
+- **Page Down** — scroll log down one page
+- **Home** — jump to oldest buffered line
+- **End** — jump back to live tail
+
+### Emacs line editing
+- **Ctrl+A** / **Ctrl+E** — beginning / end of line
+- **Ctrl+F** / **Ctrl+B** — forward / backward character
+- **Alt+F** / **Alt+B** — forward / backward word
+- **Ctrl+D** — delete character forward
+- **Backspace** / **Ctrl+H** — delete character backward
+- **Ctrl+T** — transpose characters
+- **Ctrl+K** — kill to end of line
+- **Ctrl+U** — kill whole line
+- **Ctrl+W** — kill word backward
+- **Alt+D** — kill word forward
+- **Ctrl+Y** — yank (paste last kill)
+- **Ctrl+P** / **Up** — previous command
+- **Ctrl+N** / **Down** — next command
+- **Ctrl+L** — redraw screen
 ## How to run the project
 First of all you should have the robots.json in the same directory as the script.
 The structure of the json file is like next.
